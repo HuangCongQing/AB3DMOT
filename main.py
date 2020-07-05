@@ -363,7 +363,7 @@ class AB3DMOT(object):
     trks = np.ma.compress_rows(np.ma.masked_invalid(trks))   
     for t in reversed(to_del):
       self.trackers.pop(t)
-
+    # convert_3dbox_to_8corner
     dets_8corner = [convert_3dbox_to_8corner(det_tmp) for det_tmp in dets]
     if len(dets_8corner) > 0: dets_8corner = np.stack(dets_8corner, axis=0)
     else: dets_8corner = []
@@ -406,28 +406,40 @@ if __name__ == '__main__':
 
   det_id2str = {1:'Pedestrian', 2:'Car', 3:'Cyclist'}
   seq_file_list, num_seq = load_list_from_folder(os.path.join('data/KITTI', result_sha))
+  print("seq_file_list: ", seq_file_list)
+  print("num_seq: ", num_seq)
   total_time = 0.0
   total_frames = 0
   save_dir = os.path.join(save_root, result_sha); mkdir_if_missing(save_dir)
   eval_dir = os.path.join(save_dir, 'data'); mkdir_if_missing(eval_dir)
+  print("save_dir:", save_dir,"eval_dir:", eval_dir )
   for seq_file in seq_file_list:
+    # ata/KITTI/car_3d_det_val/0000.txt每一个txt文件遍历
     _, seq_name, _ = fileparts(seq_file)
     mot_tracker = AB3DMOT() 
-    seq_dets = np.loadtxt(seq_file, delimiter=',') #load detections
+    # print("seq_file: ", seq_file)
+    seq_dets = np.loadtxt(seq_file, delimiter=',') #load detections txt每行数据集合
+    # print("seq_dets: ", seq_dets)
     eval_file = os.path.join(eval_dir, seq_name + '.txt'); eval_file = open(eval_file, 'w')
     save_trk_dir = os.path.join(save_dir, 'trk_withid', seq_name); mkdir_if_missing(save_trk_dir)
+    # print("save_trk_dir",save_trk_dir)
     print("Processing %s." % (seq_name))
     for frame in range(int(seq_dets[:,0].min()), int(seq_dets[:,0].max()) + 1):
       save_trk_file = os.path.join(save_trk_dir, '%06d.txt' % frame); save_trk_file = open(save_trk_file, 'w')
-      dets = seq_dets[seq_dets[:,0]==frame,7:14]
-
+      # print("save_trk_file", save_trk_file)
+      # save_trk_file <_io.TextIOWrapper name='./results/car_3d_det_val/trk_withid/0020/000836.txt' mode='w' encoding='UTF-8'>
+      dets = seq_dets[seq_dets[:,0]==frame,7:14] # 3D BBOX 选取第一个元素frame的行，取其中7:14
+      # print("dets", dets)
       ori_array = seq_dets[seq_dets[:,0]==frame,-1].reshape((-1, 1))
+      # print("ori_array", ori_array) # 一行的最后一个元素  Alpha 
       other_array = seq_dets[seq_dets[:,0]==frame,1:7]
       additional_info = np.concatenate((ori_array, other_array), axis=1)
       dets_all = {'dets': dets, 'info': additional_info}
+      print("dets_all", dets_all)
       total_frames += 1
       start_time = time.time()
       trackers = mot_tracker.update(dets_all)
+      print("trackers", trackers)
       cycle_time = time.time() - start_time
       total_time += cycle_time
       for d in trackers:
