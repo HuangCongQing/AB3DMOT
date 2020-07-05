@@ -397,11 +397,12 @@ class AB3DMOT(object):
     return np.empty((0,15))      
     
 if __name__ == '__main__':
-  if len(sys.argv)!=2:
-    print("Usage: python main.py result_sha(e.g., car_3d_det_test)")
-    sys.exit(1)
+  # if len(sys.argv)!=2:
+  #   print("Usage: python main.py result_sha(e.g., car_3d_det_test)")
+  #   sys.exit(1)
 
-  result_sha = sys.argv[1]
+  # result_sha = sys.argv[1]
+  result_sha = "car_3d_det_val"
   save_root = './results'
 
   det_id2str = {1:'Pedestrian', 2:'Car', 3:'Cyclist'}
