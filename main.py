@@ -150,13 +150,17 @@ class KalmanBoxTracker(object):
   """
   This class represents the internel state of individual tracked objects observed as bbox.
   """
-  count = 0
+  count = 0 # 类变量
   def __init__(self, bbox3D, info):
     """
     Initialises a tracker using initial bounding box.
     """
-    #define constant velocity model
-    self.kf = KalmanFilter(dim_x=10, dim_z=7)       
+    #define constant velocity model 恒定速率模型，x，z是什么意思？ 特征维度10，测量数据维度7
+    self.kf = KalmanFilter(dim_x=10, dim_z=7)
+    # 状态转换矩阵 10*10; 多了三个1 的 eye 矩阵；  增加了3个1；
+    # 之所以增加了3个1因为距离估计值等于 之前的距离加上速度，其实这里没有考虑时间的关系，
+    # 估计是假定恒等时间间隔了； 那么最后是否可以得到一个估计的速度值？
+    # F如果是全1的eye矩阵表示，所有的值都是测量的原来的值。
     self.kf.F = np.array([[1,0,0,0,0,0,0,1,0,0],      # state transition matrix
                           [0,1,0,0,0,0,0,0,1,0],
                           [0,0,1,0,0,0,0,0,0,1],
@@ -167,7 +171,7 @@ class KalmanBoxTracker(object):
                           [0,0,0,0,0,0,0,1,0,0],
                           [0,0,0,0,0,0,0,0,1,0],
                           [0,0,0,0,0,0,0,0,0,1]])     
-    
+    # 7*10  观测转换矩阵 H   之前是全0；
     self.kf.H = np.array([[1,0,0,0,0,0,0,0,0,0],      # measurement function,
                           [0,1,0,0,0,0,0,0,0,0],
                           [0,0,1,0,0,0,0,0,0,0],
@@ -199,17 +203,22 @@ class KalmanBoxTracker(object):
     #                       [0,0,0,0,0,0,1,0,0,0,0]])
 
     # self.kf.R[0:,0:] *= 10.   # measurement uncertainty
+    # 初始状态协方差矩阵 P，给予了很大的初值；shape 是多少？
+    # 初值值是eye矩阵 10*10； 因为初始速度没有观测值，所以给一个很大的误差值；
     self.kf.P[7:,7:] *= 1000. #state uncertainty, give high uncertainty to the unobservable initial velocities, covariance matrix
     self.kf.P *= 10.
     
     # self.kf.Q[-1,-1] *= 0.01    # process uncertainty
+    # 状态转移协方差矩阵 Q, 协方差比较小，因为它比较精准；
     self.kf.Q[7:,7:] *= 0.01
     self.kf.x[:7] = bbox3D.reshape((7, 1))
 
     self.time_since_update = 0
+    # 类变量 用作 ID
     self.id = KalmanBoxTracker.count
     KalmanBoxTracker.count += 1
-    self.history = []
+    self.history = []  # 保存的是最后一次update之后所有的历史状态
+    # 用于控制跟踪器创建和保持
     self.hits = 1           # number of total hits including the first detection
     self.hit_streak = 1     # number of continuing hit considering the first detection
     self.first_continuing_hit = 1
@@ -250,7 +259,7 @@ class KalmanBoxTracker(object):
     
     ######################### 
 
-    self.kf.update(bbox3D)
+    self.kf.update(bbox3D)  # 直接调用的库做更新
 
     if self.kf.x[3] >= np.pi: self.kf.x[3] -= np.pi * 2    # make the theta still in the range
     if self.kf.x[3] < -np.pi: self.kf.x[3] += np.pi * 2
@@ -260,7 +269,7 @@ class KalmanBoxTracker(object):
     """
     Advances the state vector and returns the predicted bounding box estimate.
     """
-    self.kf.predict()      
+    self.kf.predict()   # 直接调用的库做预测，只需要传入相应值就行；
     if self.kf.x[3] >= np.pi: self.kf.x[3] -= np.pi * 2
     if self.kf.x[3] < -np.pi: self.kf.x[3] += np.pi * 2
 
@@ -268,8 +277,8 @@ class KalmanBoxTracker(object):
     if(self.time_since_update>0):
       self.hit_streak = 0
       self.still_first = False
-    self.time_since_update += 1
-    self.history.append(self.kf.x)
+    self.time_since_update += 1  # 在update的时候就会置0了，如果没有update说明没有跟踪到
+    self.history.append(self.kf.x)  # 保存的是状态
     return self.history[-1]
 
   def get_state(self):
@@ -283,10 +292,11 @@ def associate_detections_to_trackers(detections,trackers,iou_threshold=0.01):
 # def associate_detections_to_trackers(detections,trackers,iou_threshold=0.25):
   """
   Assigns detections to tracked object (both represented as bounding boxes)
-
+  核心就是根据IOU来做匈牙利匹配；但是 8*3是什么坐标？
   detections:  N x 8 x 3
   trackers:    M x 8 x 3
 
+  返回3个列表， 匹配，不匹配的跟踪器，不匹配的检测结果
   Returns 3 lists of matches, unmatched_detections and unmatched_trackers
   """
   if(len(trackers)==0):
@@ -330,10 +340,10 @@ class AB3DMOT(object):
   # def __init__(self,max_age=2,min_hits=5):      
     """              
     """
-    self.max_age = max_age
-    self.min_hits = min_hits
+    self.max_age = max_age  # 超过2帧没有检测到就销毁了跟踪器
+    self.min_hits = min_hits  # 至少要三次才会创建跟踪器
     self.trackers = []
-    self.frame_count = 0
+    self.frame_count = 0  # 这个是干什么的？在前面 3 帧还达不到要求的时候创建初始的跟踪器
     self.reorder = [3, 4, 5, 6, 2, 1, 0] # 这是什么啊？
     self.reorder_back = [6, 5, 4, 0, 1, 2, 3]
 
@@ -364,11 +374,13 @@ class AB3DMOT(object):
     for t in reversed(to_del):
       self.trackers.pop(t)
     # convert_3dbox_to_8corner
+     # 把检测和跟踪的7个坐标转换为8个顶点的坐标
     dets_8corner = [convert_3dbox_to_8corner(det_tmp) for det_tmp in dets]
     if len(dets_8corner) > 0: dets_8corner = np.stack(dets_8corner, axis=0)
     else: dets_8corner = []
     trks_8corner = [convert_3dbox_to_8corner(trk_tmp) for trk_tmp in trks]
     if len(trks_8corner) > 0: trks_8corner = np.stack(trks_8corner, axis=0)
+    # 匹配二者，不是通过IOU吗？？在里面计算的
     matched, unmatched_dets, unmatched_trks = associate_detections_to_trackers(dets_8corner, trks_8corner)
     
     #update matched trackers with assigned detections
