@@ -334,7 +334,7 @@ class AB3DMOT(object):
     self.min_hits = min_hits
     self.trackers = []
     self.frame_count = 0
-    self.reorder = [3, 4, 5, 6, 2, 1, 0]
+    self.reorder = [3, 4, 5, 6, 2, 1, 0] # 这是什么啊？
     self.reorder_back = [6, 5, 4, 0, 1, 2, 3]
 
   def update(self,dets_all):
@@ -439,8 +439,8 @@ if __name__ == '__main__':
       print("dets_all", dets_all)
       total_frames += 1
       start_time = time.time()
-      trackers = mot_tracker.update(dets_all)
-      print("trackers", trackers)
+      trackers = mot_tracker.update(dets_all) #  mot_tracker.update
+      # print("trackers", trackers)
       cycle_time = time.time() - start_time
       total_time += cycle_time
       for d in trackers:
