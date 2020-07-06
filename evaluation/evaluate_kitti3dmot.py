@@ -1173,24 +1173,26 @@ if __name__ == "__main__":
 
     # check for correct number of arguments. if user_sha and email are not supplied,
     # no notification email is sent (this option is used for auto-updates)
-    if len(sys.argv)!=2 and len(sys.argv)!=3:
-      print("Usage: python eval_kitti3dmot.py result_sha ?D(e.g. 2D or 3D)")
-      sys.exit(1);
+    # if len(sys.argv)!=2 and len(sys.argv)!=3:
+    #   print("Usage: python eval_kitti3dmot.py result_sha ?D(e.g. 2D or 3D)")
+    #   sys.exit(1);
 
     # get unique sha key of submitted results
-    result_sha = sys.argv[1]
+    # result_sha = sys.argv[1]
+    result_sha = "car_3d_det_val" # 调试
     mail = mailpy.Mail("")
     # 
-    if len(sys.argv)==3:
-        if sys.argv[2] == '2D':
-            eval_3diou, eval_2diou = False, True      # eval 2d
-        elif sys.argv[2] == '3D':
-            eval_3diou, eval_2diou = True, False        # eval 3d
-        else:
-            print("Usage: python eval_kitti3dmot.py result_sha ?D(e.g. 2D or 3D)")
-            sys.exit(1);            
-    else:
-        eval_3diou, eval_2diou = True, False        # eval 3d
+    # if len(sys.argv)==3:
+    #     if sys.argv[2] == '2D':
+    #         eval_3diou, eval_2diou = False, True      # eval 2d
+    #     elif sys.argv[2] == '3D':
+    #         eval_3diou, eval_2diou = True, False        # eval 3d
+    #     else:
+    #         print("Usage: python eval_kitti3dmot.py result_sha ?D(e.g. 2D or 3D)")
+    #         sys.exit(1);            
+    # else:
+    #     eval_3diou, eval_2diou = True, False        # eval 3d
+    eval_3diou, eval_2diou = True, False
 
     # evaluate results
     success = evaluate(result_sha,mail,eval_3diou,eval_2diou)
