@@ -18,7 +18,7 @@ num_sample_pts = 41.0
 
 class tData:
     """
-        Utility class to load data.
+        Utility class to load data. 工具类来加载数据。
     """
     def __init__(self,frame=-1,obj_type="unset",truncation=-1,occlusion=-1,\
                  obs_angle=-10,x1=-1,y1=-1,x2=-1,y2=-1,w=-1,h=-1,l=-1,\
@@ -59,7 +59,7 @@ class tData:
         return '\n'.join("%s: %s" % item for item in attrs.items())
 
 class trackingEvaluation(object):
-    """ tracking statistics (CLEAR MOT, id-switches, fragments, ML/PT/MT, precision/recall)
+    """ Tracking统计 tracking statistics (CLEAR MOT, id-switches, fragments, ML/PT/MT, precision/recall)
              MOTA   - Multi-object tracking accuracy in [0,100]
              MOTP   - Multi-object tracking precision in [0,100] (3D) / [td,100] (2D)
              MOTAL  - Multi-object tracking accuracy in [0,100] with log10(id-switches)
@@ -100,7 +100,8 @@ class trackingEvaluation(object):
         # data and parameter
         self.gt_path           = os.path.join(gt_path, "label")
         self.t_sha             = t_sha
-        self.t_path            = os.path.join("./results", t_sha, "data")
+        self.t_path = os.path.join("./results", t_sha, "data")
+        # print("self.t_path:", self.t_path)
         
         # statistics and numbers for evaluation
         self.n_gt              = 0 # number of ground truth detections minus ignored false negatives and true positives
@@ -194,6 +195,8 @@ class trackingEvaluation(object):
             Generic loader for ground truth and tracking data.
             Use loadGroundtruth() or loadTracker() to load this data.
             Loads detections in KITTI format from textfiles.
+            使用loadGroundtruth()或loadTracker()来加载该数据。
+            加载检测在KITTI格式从文本文件。
         """
         # construct objectDetections object to hold detection data
         t_data  = tData()
@@ -974,11 +977,12 @@ class trackingEvaluation(object):
 
 class stat:
     """
-        Utility class to load data.
+        Utility class to load data. 工具类来加载数据。
     """
     def __init__(self, t_sha, cls, suffix, dump):
         """
             Constructor, initializes the object given the parameters.
+            构造函数，初始化给定参数的对象。
         """
         
         # init object data
@@ -1076,7 +1080,7 @@ class stat:
 
     def plot(self):
         save_dir = os.path.join("./results", self.t_sha)
-
+        # 图 保存在pdf
         self.plot_over_recall(self.mota_list, 'MOTA - Recall Curve', 'MOTA', os.path.join(save_dir, 'MOTA_recall_curve_%s_%s.pdf' % (self.cls, self.suffix)))
         self.plot_over_recall(self.sMOTA_list, 'sMOTA - Recall Curve', 'sMOTA', os.path.join(save_dir, 'sMOTA_recall_curve_%s_%s.pdf' % (self.cls, self.suffix)))
         self.plot_over_recall(self.motp_list, 'MOTP - Recall Curve', 'MOTP', os.path.join(save_dir, 'MOTP_recall_curve_%s_%s.pdf' % (self.cls, self.suffix)))
@@ -1089,6 +1093,8 @@ def evaluate(result_sha,mail,eval_3diou,eval_2diou):
     """
         Entry point for evaluation, will load the data and start evaluation for
         CAR and PEDESTRIAN if available.
+        评估的入口点，将加载数据并开始评估
+        汽车和行人(如果有的话)。
     """
     
     # start evaluation and instanciated eval object
