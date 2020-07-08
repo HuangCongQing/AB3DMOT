@@ -31,6 +31,7 @@ def vis(result_sha, data_root, result_root):
 		image_dir = os.path.join(data_root, 'image_02/%s' % seq)
 		calib_file = os.path.join(data_root, 'calib/%s.txt' % seq)
 		result_dir = os.path.join(result_root, '%s/trk_withid/%s' % (result_sha, seq))
+		# 图片trk_image_vis
 		save_3d_bbox_dir = os.path.join(result_dir, '../../trk_image_vis/%s' % seq); mkdir_if_missing(save_3d_bbox_dir)
 
 		# load the list
