@@ -67,12 +67,13 @@ def vis(result_sha, data_root, result_root):
 			count += 1
 
 if __name__ == "__main__":
-	if len(sys.argv)!=2:
-		print("Usage: python visualization.py result_sha(e.g., car_3d_det_test)")
-		sys.exit(1)
+	# if len(sys.argv)!=2:
+	# 	print("Usage: python visualization.py result_sha(e.g., car_3d_det_test)")
+	# 	sys.exit(1)
 
 	result_root = './results'
-	result_sha = sys.argv[1]
+	# result_sha = sys.argv[1]
+	result_sha = "car_3d_det_test"
 	if 'val' in result_sha: data_root = './data/KITTI/resources/training'
 	elif 'test' in result_sha: data_root = './data/KITTI/resources/testing'
 	else:
