@@ -434,12 +434,13 @@ def multiple_replace(file):
   # return rx.sub(one_xlat, text)
 
 if __name__ == '__main__':
-  if len(sys.argv)!=2:
-    print("Usage: python main.py result_sha(e.g., car_3d_det_test)")
-    sys.exit(1)
+  # if len(sys.argv)!=2:
+  #   print("Usage: python main.py result_sha(e.g., car_3d_det_test)")
+  #   sys.exit(1)
   # =============================获取数据(改为直接输入)==================================
-  result_sha = sys.argv[1]  # 获取输入路径
-  save_root = './results'
+  # result_sha = sys.argv[1]  # 获取输入路径
+  result_sha = "test_video"  # 获取输入路径
+  save_root = './results-deecamp'
 
   det_id2str = {1:'Pedestrian', 2:'Car', 3:'Cyclist', 4:'Truck', 5:'Tricar'}
   seq_file_list, num_seq = load_list_from_folder(os.path.join('data/KITTI', result_sha))

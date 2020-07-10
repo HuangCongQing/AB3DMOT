@@ -100,7 +100,8 @@ class trackingEvaluation(object):
         # data and parameter
         self.gt_path           = os.path.join(gt_path, "label")
         self.t_sha             = t_sha
-        self.t_path = os.path.join("./results", t_sha, "data")
+        # self.t_path = os.path.join("./results", t_sha, "data")
+        self.t_path = os.path.join("./results-deecamp", t_sha, "data")
         # print("self.t_path:", self.t_path)
         
         # statistics and numbers for evaluation
@@ -1185,7 +1186,8 @@ if __name__ == "__main__":
 
     # get unique sha key of submitted results
     # result_sha = sys.argv[1]
-    result_sha = "car_3d_det_val" # 调试
+    # result_sha = "car_3d_det_val" # 调试
+    result_sha = "test_video"  # 调试
     mail = mailpy.Mail("")
     # 
     # if len(sys.argv)==3:
