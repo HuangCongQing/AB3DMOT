@@ -2,6 +2,14 @@ filterpy==1.4.5
 scikit-learn==0.19.2
 matplotlib==2.2.3
 pillow==6.2.0
-
+numba==0.43.1
 opencv-python==3.4.3.18
 glob2==0.6
+
+# my local
+scipy==1.5.2
+glob2==0.7
+
+# main-open3D.py
+open3d==0.10.0.1
+alfred-py==2.7.5

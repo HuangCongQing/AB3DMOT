@@ -104,5 +104,6 @@ venv.bak/
 .mypy_cache/
 results/
 results-deecamp/
+results-open3D/
 test_video01/
-data/KITTI/test_video
+data/KITTI/
